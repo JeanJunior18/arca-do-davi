@@ -16,7 +16,7 @@ Fonte de verdade para qualquer código em `src/domain/`,
 | created_at | timestamptz | default now() |
 
 RLS: insert liberado pra `anon`. Sem policy de select pra `anon` — leitura só
-via `SUPABASE_SERVICE_ROLE_KEY` em `app/internal/guest-log/`.
+via `SUPABASE_SECRET_KEY` em `app/internal/guest-log/`.
 
 ### gift_items
 

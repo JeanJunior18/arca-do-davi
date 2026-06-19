@@ -15,7 +15,7 @@ mobile-first, sem autenticação de usuário público.
 
 ## Regras inegociáveis (segurança)
 Detalhe completo em `.claude/rules/security.md` (carregado em toda sessão).
-Resumo: nenhuma chave do Supabase chega ao browser; `SUPABASE_SERVICE_ROLE_KEY`
+Resumo: nenhuma chave do Supabase chega ao browser; `SUPABASE_SECRET_KEY`
 só é usada em `src/app/internal/guest-log/`; nenhuma env var do Supabase tem
 prefixo `NEXT_PUBLIC_`; não usar `"use cache"` em dados mutáveis
 (`gift_items`, `rsvps`, `guestbook_messages`).

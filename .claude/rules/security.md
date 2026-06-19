@@ -4,7 +4,7 @@
   nem nada de `src/infrastructure/`. Se um componente precisa de dado do
   servidor, busque num Server Component pai e passe via props, ou chame uma
   Server Action de `src/app/actions/`.
-- `SUPABASE_SERVICE_ROLE_KEY` é usada em exatamente um lugar:
+- `SUPABASE_SECRET_KEY` é usada em exatamente um lugar:
   `src/app/internal/guest-log/page.tsx`. Nunca deve aparecer em nenhum outro
   arquivo, bundle de client ou log.
 - Nenhuma variável de ambiente com chave do Supabase tem prefixo
