@@ -12,6 +12,7 @@ mobile-first, sem autenticação de usuário público.
 - `npm run dev` — servidor local
 - `npm run build` — build de produção; rodar localmente antes de todo deploy
 - `npm run lint` — ESLint
+- `npm run test` — testes unitários (vitest) da camada `application/use-cases/`
 
 ## Regras inegociáveis (segurança)
 Detalhe completo em `.claude/rules/security.md` (carregado em toda sessão).
