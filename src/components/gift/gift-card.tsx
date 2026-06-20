@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import type { ReactNode } from 'react';
 import { useOptimistic, useState, useTransition } from 'react';
 
@@ -19,6 +20,7 @@ export interface GiftCardProps {
 interface GiftClaimStrategy {
   ctaLabel: string;
   claimedLabel: string;
+  categoryLabel: string;
   claim: (formData: FormData) => Promise<{ success: boolean; message?: string }>;
   renderExtraFields?: () => ReactNode;
 }
@@ -27,11 +29,13 @@ const claimStrategyByCategory: Record<GiftCategory, GiftClaimStrategy> = {
   [GiftCategory.REGISTRY_ITEM]: {
     ctaLabel: 'Quero dar esse presente',
     claimedLabel: 'Já reservado, obrigado!',
+    categoryLabel: 'Lista de presentes',
     claim: claimRegistryItemAction,
   },
   [GiftCategory.DIAPER_PACK]: {
     ctaLabel: 'Reservar fraldas',
     claimedLabel: 'Obrigado pela reserva!',
+    categoryLabel: 'Fraldas',
     claim: claimDiaperPackAction,
     renderExtraFields: () => (
       <Input
@@ -46,12 +50,40 @@ const claimStrategyByCategory: Record<GiftCategory, GiftClaimStrategy> = {
   },
 };
 
+function GiftThumbnail({ item, onOpen }: { item: GiftItem; onOpen: () => void }) {
+  if (!item.imageUrl) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-primary-50 text-3xl text-primary-300">
+        🎁
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-label={`Ver foto de ${item.name} em tamanho grande`}
+      className="relative block h-full w-full cursor-zoom-in"
+    >
+      <Image
+        src={item.imageUrl}
+        alt={item.name}
+        fill
+        className="object-cover transition-transform duration-300 hover:scale-105"
+        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+      />
+    </button>
+  );
+}
+
 export function GiftCard({ item }: GiftCardProps) {
   const strategy = claimStrategyByCategory[item.category];
   const [confirmedItem, setConfirmedItem] = useState(item);
   const [optimisticItem, setOptimisticItem] = useOptimistic(confirmedItem);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   const isClaimed = optimisticItem.status !== GiftStatus.AVAILABLE;
 
@@ -74,7 +106,12 @@ export function GiftCard({ item }: GiftCardProps) {
 
   return (
     <Card className="flex flex-col gap-3">
-      <div className="flex items-start justify-between gap-3">
+      <div className="relative -m-6 mb-0 aspect-square overflow-hidden rounded-t-2xl">
+        <GiftThumbnail item={item} onOpen={() => setIsLightboxOpen(true)} />
+        <Badge className="absolute top-3 left-3 shadow-card">{strategy.categoryLabel}</Badge>
+      </div>
+
+      <div className="flex items-start justify-between gap-3 pt-1">
         <div>
           <h3 className="font-display text-lg text-primary-700">{item.name}</h3>
           {item.sizeLabel && (
@@ -122,6 +159,32 @@ export function GiftCard({ item }: GiftCardProps) {
           </div>
           {feedback && <p className="font-body text-sm text-secondary-700">{feedback}</p>}
         </form>
+      )}
+
+      {isLightboxOpen && item.imageUrl && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={item.name}
+          onClick={() => setIsLightboxOpen(false)}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-6"
+        >
+          <button
+            type="button"
+            aria-label="Fechar"
+            onClick={() => setIsLightboxOpen(false)}
+            className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-surface text-lg text-primary-700"
+          >
+            ✕
+          </button>
+          {/* eslint-disable-next-line @next/next/no-img-element -- overlay de tamanho variável, sem necessidade de otimização do next/image */}
+          <img
+            src={item.imageUrl}
+            alt={item.name}
+            className="max-h-full max-w-full rounded-2xl object-contain"
+            onClick={(event) => event.stopPropagation()}
+          />
+        </div>
       )}
     </Card>
   );
