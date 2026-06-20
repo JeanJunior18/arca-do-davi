@@ -16,6 +16,13 @@ export async function GiftRegistrySection() {
       title="Lista de presentes"
       subtitle="O melhor presente é ter você conosco! Mas, se quiser nos presentear, escolha como preferir:"
     >
+      <p className="mb-8 max-w-xl text-center font-body text-sm italic text-ink-soft">
+        Os itens abaixo são só sugestões — fique livre pra reservar e comprar pelo link, ou
+        presentear como preferir. Nenhuma obrigação, é só pra ajudar quem quiser dar uma ideia
+        do que falta. Priorizamos brinquedos pedagógicos e educativos, que ajudam no
+        desenvolvimento do Davi.
+      </p>
+
       <div className="grid w-full gap-8">
         {registryItems.length > 0 && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
