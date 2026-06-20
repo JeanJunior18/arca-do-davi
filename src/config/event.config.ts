@@ -11,7 +11,7 @@ export const eventConfig = {
     reference: 'Gênesis 7:9',
   },
   pix: {
-    key: 'pix-key-placeholder',
-    qrCodeImageUrl: '/pix-qr-code-placeholder.png',
+    key: 'pix@asherlabs.com.br',
+    qrCodeImageUrl: '/pix-qr-code.png',
   },
 } as const;
