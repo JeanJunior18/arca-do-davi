@@ -1,12 +1,18 @@
 import { z } from 'zod';
 
-import type { Rsvp } from '@/domain/entities/rsvp';
-import type { RsvpRepository } from '@/domain/repositories/rsvp-repository';
+import type { RsvpRepository, RsvpUpsertResult } from '@/domain/repositories/rsvp-repository';
 
 const confirmAttendanceInputSchema = z.object({
   guestName: z.string().min(2),
   companionCount: z.number().int().nonnegative(),
-  whatsappNumber: z.string().regex(/^\(\d{2}\)\s?\d{4,5}-?\d{4}$/),
+  // Normaliza pra só dígitos antes de validar — assim "(86) 99916-7437" e
+  // "86999167437" chegam no mesmo valor no banco, onde whatsapp_number é
+  // chave única (regra de negócio #6 do domain model).
+  whatsappNumber: z
+    .string()
+    .transform((value) => value.replace(/\D/g, ''))
+    .pipe(z.string().regex(/^\d{10,11}$/, 'Whatsapp deve ter DDD + número (10 ou 11 dígitos).')),
+  confirmUpdate: z.boolean().default(false),
 });
 
 export type ConfirmAttendanceInput = z.infer<typeof confirmAttendanceInputSchema>;
@@ -14,7 +20,7 @@ export type ConfirmAttendanceInput = z.infer<typeof confirmAttendanceInputSchema
 export async function confirmAttendance(
   rsvpRepository: RsvpRepository,
   input: ConfirmAttendanceInput,
-): Promise<Rsvp> {
+): Promise<RsvpUpsertResult> {
   const parsed = confirmAttendanceInputSchema.parse(input);
-  return rsvpRepository.create(parsed);
+  return rsvpRepository.upsert(parsed);
 }

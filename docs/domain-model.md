@@ -12,11 +12,12 @@ Fonte de verdade para qualquer código em `src/domain/`,
 | id | uuid PK | |
 | guest_name | text | not null |
 | companion_count | int | >= 0, default 0 |
-| whatsapp_number | text | not null |
+| whatsapp_number | text | not null, **unique** |
 | created_at | timestamptz | default now() |
 
-RLS: insert liberado pra `anon`. Sem policy de select pra `anon` — leitura só
-via `SUPABASE_SECRET_KEY` em `app/internal/guest-log/`.
+RLS: sem nenhuma policy pra `anon` — nem insert, nem select. Toda escrita
+passa pela RPC `upsert_rsvp` (ver regra de negócio #6); leitura só via
+`SUPABASE_SECRET_KEY` em `app/internal/guest-log/`.
 
 ### gift_items
 
@@ -31,6 +32,7 @@ via `SUPABASE_SECRET_KEY` em `app/internal/guest-log/`.
 | quantity_needed | int | > 0, default 1 |
 | status | enum `gift_status` | AVAILABLE \| CLAIMED \| FULFILLED |
 | created_at | timestamptz | default now() |
+| purchase_url | text | nullable, link de afiliado opcional — qualquer categoria, independente do fluxo de claim |
 
 RLS: select liberado pra `anon`. Sem insert/update público — gerenciado via
 dashboard ou seed.
@@ -104,6 +106,20 @@ RLS: select liberado pra `anon` apenas.
    client de service role. É obscuridade de URL + RLS, não um sistema de
    autenticação completo — aceitável porque o projeto é de curta duração e
    tem um único operador.
+
+6. **RSVP é upsert por `whatsapp_number`, nunca insert cego.** Sempre via RPC
+   `upsert_rsvp(p_guest_name, p_companion_count, p_whatsapp_number, p_confirm_update)`
+   — nunca insert/update direto na tabela (não há policy de `anon` pra isso).
+   A RPC primeiro busca uma linha com aquele `whatsapp_number`:
+   - Se não existe, insere e retorna `{ status: 'CREATED' }`.
+   - Se existe e `p_confirm_update = false`, **não altera nada** e retorna
+     `{ status: 'ALREADY_EXISTS', guest_name, companion_count }` com os
+     dados já registrados, pra UI perguntar "já existe uma confirmação de
+     {guest_name}, quer atualizar a quantidade de acompanhantes?".
+   - Se existe e `p_confirm_update = true`, atualiza **só** `companion_count`
+     (nunca o nome) e retorna `{ status: 'UPDATED' }`.
+   `RsvpRepository.upsert` devolve esse resultado tipado (`RsvpUpsertResult`)
+   sem transformação — mesmo contrato de LSP do `claimRegistryItem`.
 
 ## Enums (TypeScript — precisam bater exatamente com os enums do Postgres)
 

@@ -11,4 +11,5 @@ export interface GiftItem {
   quantityNeeded: number;
   status: GiftStatus;
   createdAt: string;
+  purchaseUrl: string | null;
 }

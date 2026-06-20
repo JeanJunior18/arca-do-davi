@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Rsvp } from '@/domain/entities/rsvp';
-import type { RsvpRepository } from '@/domain/repositories/rsvp-repository';
+import type { RsvpRepository, RsvpUpsertResult } from '@/domain/repositories/rsvp-repository';
 
 import { listRsvps } from './list-rsvps.use-case';
 
 class FakeRsvpRepository implements RsvpRepository {
   constructor(private readonly rsvps: Rsvp[]) {}
 
-  async create(): Promise<Rsvp> {
+  async upsert(): Promise<RsvpUpsertResult> {
     throw new Error('not implemented');
   }
 

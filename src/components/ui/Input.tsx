@@ -10,7 +10,7 @@ export function Input({ label, error, id, name, className = '', ...rest }: Input
 
   return (
     <label className="flex w-full flex-col gap-1.5" htmlFor={fieldId}>
-      <span className="font-body text-xs font-semibold uppercase tracking-wide text-primary-700">
+      <span className="flex min-h-9 items-end font-body text-xs font-semibold uppercase tracking-wide text-primary-700">
         {label}
       </span>
       <input

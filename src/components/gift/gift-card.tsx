@@ -88,14 +88,38 @@ export function GiftCard({ item }: GiftCardProps) {
       {item.description && <p className="font-body text-sm text-ink-soft">{item.description}</p>}
 
       {isClaimed ? (
-        <p className="font-body text-sm font-semibold text-primary-700">{strategy.claimedLabel}</p>
+        <div className="flex flex-col gap-3">
+          <p className="font-body text-sm font-semibold text-primary-700">{strategy.claimedLabel}</p>
+          {item.purchaseUrl && (
+            <a
+              href={item.purchaseUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-primary-300 bg-surface px-6 py-3 font-body text-sm font-semibold uppercase tracking-wide text-primary-700 transition-colors hover:bg-primary-50"
+            >
+              Comprar
+            </a>
+          )}
+        </div>
       ) : (
         <form action={handleSubmit} className="flex flex-col gap-3">
           <Input label="Seu nome" name="guestName" placeholder="Digite seu nome" required minLength={2} />
           {strategy.renderExtraFields?.()}
-          <Button type="submit" disabled={isPending} className="w-full">
-            {isPending ? 'Reservando…' : strategy.ctaLabel}
-          </Button>
+          <div className="flex gap-3">
+            <Button type="submit" disabled={isPending} className="flex-1">
+              {isPending ? 'Reservando…' : strategy.ctaLabel}
+            </Button>
+            {item.purchaseUrl && (
+              <a
+                href={item.purchaseUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-primary-300 bg-surface px-6 py-3 font-body text-sm font-semibold uppercase tracking-wide text-primary-700 transition-colors hover:bg-primary-50"
+              >
+                Comprar
+              </a>
+            )}
+          </div>
           {feedback && <p className="font-body text-sm text-secondary-700">{feedback}</p>}
         </form>
       )}

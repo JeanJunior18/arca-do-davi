@@ -35,6 +35,7 @@ function buildGiftItem(overrides: Partial<GiftItem>): GiftItem {
     imageUrl: null,
     category: GiftCategory.REGISTRY_ITEM,
     sizeLabel: null,
+    purchaseUrl: null,
     quantityNeeded: 1,
     status: GiftStatus.AVAILABLE,
     createdAt: '',

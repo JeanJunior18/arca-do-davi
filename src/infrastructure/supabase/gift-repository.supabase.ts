@@ -19,6 +19,7 @@ interface GiftItemRow {
   quantity_needed: number;
   status: GiftStatus;
   created_at: string;
+  purchase_url: string | null;
 }
 
 interface GiftClaimRow {
@@ -41,6 +42,7 @@ function toGiftItem(row: GiftItemRow): GiftItem {
     quantityNeeded: row.quantity_needed,
     status: row.status,
     createdAt: row.created_at,
+    purchaseUrl: row.purchase_url,
   };
 }
 

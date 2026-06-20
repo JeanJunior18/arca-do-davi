@@ -1,20 +1,28 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Rsvp } from '@/domain/entities/rsvp';
-import type { RsvpRepository } from '@/domain/repositories/rsvp-repository';
+import type { RsvpRepository, RsvpUpsertResult } from '@/domain/repositories/rsvp-repository';
 
 import { confirmAttendance } from './confirm-attendance.use-case';
 
 class FakeRsvpRepository implements RsvpRepository {
-  public created: Array<{ guestName: string; companionCount: number; whatsappNumber: string }> = [];
-
-  async create(input: {
+  public upserted: Array<{
     guestName: string;
     companionCount: number;
     whatsappNumber: string;
-  }): Promise<Rsvp> {
-    this.created.push(input);
-    return { id: 'fake-id', createdAt: new Date().toISOString(), ...input };
+    confirmUpdate: boolean;
+  }> = [];
+
+  constructor(private readonly result: RsvpUpsertResult = { status: 'CREATED' }) {}
+
+  async upsert(input: {
+    guestName: string;
+    companionCount: number;
+    whatsappNumber: string;
+    confirmUpdate: boolean;
+  }): Promise<RsvpUpsertResult> {
+    this.upserted.push(input);
+    return this.result;
   }
 
   async listAll(): Promise<Rsvp[]> {
@@ -24,26 +32,65 @@ class FakeRsvpRepository implements RsvpRepository {
 
 describe('confirmAttendance', () => {
   it('cria o rsvp quando o input é válido', async () => {
-    const repository = new FakeRsvpRepository();
+    const repository = new FakeRsvpRepository({ status: 'CREATED' });
 
     const result = await confirmAttendance(repository, {
       guestName: 'Maria',
       companionCount: 2,
       whatsappNumber: '(11) 91234-5678',
+      confirmUpdate: false,
     });
 
-    expect(result.guestName).toBe('Maria');
-    expect(repository.created).toHaveLength(1);
+    expect(result).toEqual({ status: 'CREATED' });
+    expect(repository.upserted).toHaveLength(1);
   });
 
-  it('rejeita whatsapp fora do formato esperado', async () => {
+  it('normaliza o whatsapp pra só dígitos, com ou sem formatação', async () => {
+    const repository = new FakeRsvpRepository({ status: 'CREATED' });
+
+    await confirmAttendance(repository, {
+      guestName: 'Maria',
+      companionCount: 0,
+      whatsappNumber: '(86) 99916-7437',
+      confirmUpdate: false,
+    });
+    await confirmAttendance(repository, {
+      guestName: 'Maria',
+      companionCount: 0,
+      whatsappNumber: '86999167437',
+      confirmUpdate: false,
+    });
+
+    expect(repository.upserted[0].whatsappNumber).toBe('86999167437');
+    expect(repository.upserted[1].whatsappNumber).toBe('86999167437');
+  });
+
+  it('repassa ALREADY_EXISTS com o registro existente sem transformação', async () => {
+    const repository = new FakeRsvpRepository({
+      status: 'ALREADY_EXISTS',
+      guestName: 'Maria',
+      companionCount: 1,
+    });
+
+    const result = await confirmAttendance(repository, {
+      guestName: 'Maria',
+      companionCount: 3,
+      whatsappNumber: '(11) 91234-5678',
+      confirmUpdate: false,
+    });
+
+    expect(result).toEqual({ status: 'ALREADY_EXISTS', guestName: 'Maria', companionCount: 1 });
+  });
+
+  it('rejeita whatsapp com menos de 10 dígitos', async () => {
     const repository = new FakeRsvpRepository();
 
     await expect(
       confirmAttendance(repository, {
         guestName: 'Maria',
         companionCount: 0,
-        whatsappNumber: '11912345678',
+        whatsappNumber: '123',
+        confirmUpdate: false,
       }),
     ).rejects.toThrow();
   });
@@ -56,6 +103,7 @@ describe('confirmAttendance', () => {
         guestName: 'M',
         companionCount: 0,
         whatsappNumber: '(11) 91234-5678',
+        confirmUpdate: false,
       }),
     ).rejects.toThrow();
   });

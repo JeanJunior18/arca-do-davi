@@ -1,13 +1,16 @@
 'use server';
 
+import { ZodError } from 'zod';
+
 import { confirmAttendance } from '@/application/use-cases/confirm-attendance.use-case';
 import { createPublishableServerClient } from '@/infrastructure/supabase/publishable-server-client';
 import { SupabaseRsvpRepository } from '@/infrastructure/supabase/rsvp-repository.supabase';
 
-export interface RsvpActionResult {
-  success: boolean;
-  message?: string;
-}
+export type RsvpActionResult =
+  | { status: 'CREATED' }
+  | { status: 'UPDATED' }
+  | { status: 'ALREADY_EXISTS'; guestName: string; companionCount: number }
+  | { status: 'ERROR'; message: string };
 
 export async function confirmAttendanceAction(
   _prevState: RsvpActionResult | null,
@@ -16,14 +19,16 @@ export async function confirmAttendanceAction(
   try {
     const repository = new SupabaseRsvpRepository(createPublishableServerClient());
 
-    await confirmAttendance(repository, {
+    return await confirmAttendance(repository, {
       guestName: String(formData.get('guestName') ?? ''),
       companionCount: Number(formData.get('companionCount') ?? 0),
       whatsappNumber: String(formData.get('whatsappNumber') ?? ''),
+      confirmUpdate: formData.get('confirmUpdate') === 'true',
     });
-
-    return { success: true };
   } catch (error) {
-    return { success: false, message: error instanceof Error ? error.message : 'Erro inesperado.' };
+    if (error instanceof ZodError) {
+      return { status: 'ERROR', message: error.issues[0]?.message ?? 'Dados inválidos.' };
+    }
+    return { status: 'ERROR', message: error instanceof Error ? error.message : 'Erro inesperado.' };
   }
 }
