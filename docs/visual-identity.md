@@ -51,9 +51,11 @@ progressão (`md:`/`lg:`) que reorganiza esse mesmo conteúdo em colunas e
 cartões mais largos, nunca o contrário. Construa e valide cada seção no
 viewport mobile primeiro, só depois adicione os breakpoints de desktop.
 
-1. **NavBar** — mobile: sem barra fixa (não aparece no mockup mobile); a
-   navegação por âncora é exclusiva do desktop, onde aparece como ícone de
-   âncora + links horizontais (`md:` e acima).
+1. **NavBar** — sticky no topo em todas as larguras (decisão da Etapa 10 do
+   build plan, que prioriza a maioria dos visitantes abrindo pelo WhatsApp no
+   celular sobre a fidelidade ao mockup estático, que não mostrava nav
+   mobile). Desktop (`md:` e acima): ícone de âncora + links horizontais.
+   Mobile: mesmo ícone + botão de hambúrguer que abre um menu vertical.
 2. **Hero** — mobile (base): empilhado — intro → título → faixa "1 ANINHO"
    → ilustração → subtítulo em itálico. Desktop (`lg:`): duas colunas
    (texto + ilustração da arca lado a lado).

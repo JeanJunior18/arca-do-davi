@@ -68,23 +68,28 @@
   --shadow-card-hover: 0 2px 4px 0 rgb(95 111 68 / 0.08), 0 16px 32px -12px rgb(95 111 68 / 0.24);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+section[id] {
+  scroll-margin-top: 4.5rem;
+}
+
 body {
   position: relative;
 }
 
-/* Textura sutil de papel — não compete com as ilustrações, só dá peso tátil ao fundo creme */
+/* Textura sutil de papel — não compete com as ilustrações, só dá peso tátil ao fundo creme.
+   z-index negativo (não 0) pra pintar atrás do conteúdo estático do body sem precisar
+   forçar `position` em nenhum filho — isso preserva `position: sticky`/`fixed` deles. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
   opacity: 0.05;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-body > * {
-  position: relative;
-  z-index: 1;
 }
