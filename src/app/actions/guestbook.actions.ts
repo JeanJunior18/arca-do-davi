@@ -9,7 +9,10 @@ export interface GuestbookActionResult {
   message?: string;
 }
 
-export async function leaveMessageAction(formData: FormData): Promise<GuestbookActionResult> {
+export async function leaveMessageAction(
+  _prevState: GuestbookActionResult | null,
+  formData: FormData,
+): Promise<GuestbookActionResult> {
   try {
     const repository = new SupabaseGuestbookRepository(createPublishableServerClient());
 

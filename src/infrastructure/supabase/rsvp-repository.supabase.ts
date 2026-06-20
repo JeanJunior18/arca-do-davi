@@ -29,18 +29,26 @@ export class SupabaseRsvpRepository implements RsvpRepository {
     companionCount: number;
     whatsappNumber: string;
   }): Promise<Rsvp> {
-    const { data, error } = await this.client
-      .from('rsvps')
-      .insert({
-        guest_name: input.guestName,
-        companion_count: input.companionCount,
-        whatsapp_number: input.whatsappNumber,
-      })
-      .select()
-      .single();
+    // `rsvps` não tem policy de SELECT pra `anon` (de propósito — ver domain-model.md
+    // regra #5), então não dá pra encadear `.select()` no insert: o Postgres exige que
+    // a linha inserida passe por uma policy de SELECT pra satisfazer o RETURNING, e
+    // lançaria "new row violates row-level security policy". Por isso o insert é
+    // "fire and forget" e a entity é montada a partir do input, sem ida ao banco.
+    const { error } = await this.client.from('rsvps').insert({
+      guest_name: input.guestName,
+      companion_count: input.companionCount,
+      whatsapp_number: input.whatsappNumber,
+    });
 
     if (error) throw error;
-    return toRsvp(data as RsvpRow);
+
+    return {
+      id: crypto.randomUUID(),
+      guestName: input.guestName,
+      companionCount: input.companionCount,
+      whatsappNumber: input.whatsappNumber,
+      createdAt: new Date().toISOString(),
+    };
   }
 
   async listAll(): Promise<Rsvp[]> {

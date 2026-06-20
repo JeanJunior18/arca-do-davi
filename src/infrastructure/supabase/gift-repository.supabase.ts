@@ -91,18 +91,26 @@ export class SupabaseGiftRepository implements GiftRepository {
     guestWhatsapp?: string;
     quantity: number;
   }): Promise<GiftClaim> {
-    const { data, error } = await this.client
-      .from('gift_claims')
-      .insert({
-        gift_item_id: input.giftItemId,
-        guest_name: input.guestName,
-        guest_whatsapp: input.guestWhatsapp ?? null,
-        quantity_claimed: input.quantity,
-      })
-      .select()
-      .single();
+    // `gift_claims` não tem policy de SELECT pra `anon` (de propósito — identidade de
+    // quem reservou nunca é exposta publicamente), então não dá pra encadear `.select()`
+    // no insert: o Postgres exigiria que a linha passasse por uma policy de SELECT pra
+    // satisfazer o RETURNING e lançaria "new row violates row-level security policy".
+    const { error } = await this.client.from('gift_claims').insert({
+      gift_item_id: input.giftItemId,
+      guest_name: input.guestName,
+      guest_whatsapp: input.guestWhatsapp ?? null,
+      quantity_claimed: input.quantity,
+    });
 
     if (error) throw error;
-    return toGiftClaim(data as GiftClaimRow);
+
+    return {
+      id: crypto.randomUUID(),
+      giftItemId: input.giftItemId,
+      guestName: input.guestName,
+      guestWhatsapp: input.guestWhatsapp ?? null,
+      quantityClaimed: input.quantity,
+      createdAt: new Date().toISOString(),
+    };
   }
 }

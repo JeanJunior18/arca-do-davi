@@ -9,7 +9,10 @@ export interface RsvpActionResult {
   message?: string;
 }
 
-export async function confirmAttendanceAction(formData: FormData): Promise<RsvpActionResult> {
+export async function confirmAttendanceAction(
+  _prevState: RsvpActionResult | null,
+  formData: FormData,
+): Promise<RsvpActionResult> {
   try {
     const repository = new SupabaseRsvpRepository(createPublishableServerClient());
 

@@ -1,0 +1,52 @@
+import { Badge } from '@/components/ui/Badge';
+import { HeartDivider } from '@/components/ui/SectionContainer';
+import { eventConfig } from '@/config/event.config';
+
+export function HeroSection() {
+  return (
+    <section id="inicio" className="relative w-full overflow-hidden px-6 pt-20 pb-16 md:pt-28 md:pb-24">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 right-[-20%] h-72 w-72 rounded-full opacity-40 blur-3xl lg:h-96 lg:w-96"
+        style={{
+          background:
+            'radial-gradient(circle, var(--color-whimsy-sky), var(--color-whimsy-mint) 45%, transparent 70%)',
+        }}
+      />
+
+      <div className="relative mx-auto flex max-w-xl flex-col items-center text-center lg:max-w-5xl lg:flex-row lg:items-center lg:gap-16 lg:text-left">
+        <div className="flex flex-col items-center lg:items-start">
+          <p className="font-body text-xs font-semibold uppercase tracking-[0.2em] text-primary-600 lg:hidden">
+            Você está convidado para embarcar na
+          </p>
+          <p className="hidden max-w-md font-body text-base leading-relaxed text-ink-soft lg:order-2 lg:mt-6 lg:block">
+            Há um ano Deus nos presenteou com o nosso maior milagre. Venha celebrar o 1º
+            aniversário do nosso pequeno navegador!
+          </p>
+
+          <h1 className="mt-3 font-display text-3xl uppercase tracking-[0.1em] text-primary-700 lg:order-1 lg:mt-0 lg:text-4xl">
+            Arca do
+          </h1>
+          <p className="font-script text-6xl leading-none text-primary-700 lg:order-1 lg:text-7xl">
+            {eventConfig.childName}
+          </p>
+
+          <Badge className="mt-4 px-5 py-2 text-base lg:order-1">{eventConfig.ageLabel}</Badge>
+
+          <div className="mt-4 lg:order-1">
+            <HeartDivider />
+          </div>
+
+          <p className="mt-4 max-w-xs font-script text-2xl text-primary-600 lg:hidden">
+            Vai ser uma grande aventura com você!
+          </p>
+        </div>
+
+        <div
+          aria-hidden
+          className="mt-10 h-48 w-full max-w-sm rounded-[2.5rem] border border-primary-200/60 bg-[linear-gradient(135deg,var(--color-whimsy-pink),var(--color-whimsy-yellow)_35%,var(--color-whimsy-sky)_70%,var(--color-whimsy-mint))] opacity-70 shadow-card lg:mt-0 lg:h-80 lg:flex-1"
+        />
+      </div>
+    </section>
+  );
+}

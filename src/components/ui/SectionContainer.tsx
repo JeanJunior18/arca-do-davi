@@ -5,7 +5,7 @@ export interface SectionContainerProps extends HTMLAttributes<HTMLElement> {
   subtitle?: string;
 }
 
-function HeartDivider() {
+export function HeartDivider() {
   return (
     <svg
       aria-hidden
