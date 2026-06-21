@@ -20,8 +20,8 @@ export function HeroSection() {
             Você está convidado para embarcar na
           </p>
           <p className="hidden max-w-md font-body text-base leading-relaxed text-ink-soft lg:order-2 lg:mt-6 lg:block">
-            Há um ano Deus nos presenteou com o nosso maior milagre. Venha celebrar o 1º
-            aniversário do nosso pequeno navegador!
+            Há 1 ano, Davi Asher chegou e trouxe ainda mais alegria para a nossa família. 
+            Chegou a hora de celebrar seu 1º aniversário ao lado de pessoas especiais.
           </p>
 
           <h1 className="mt-3 font-display text-3xl uppercase tracking-[0.1em] text-primary-700 lg:order-1 lg:mt-0 lg:text-4xl">
