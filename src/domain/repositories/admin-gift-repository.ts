@@ -9,6 +9,7 @@ export interface AdminGiftRepository {
     sizeLabel?: string;
     quantityNeeded: number;
     purchaseUrl?: string;
-    image: File;
+    image?: File;
+    imageUrl?: string;
   }): Promise<GiftItem>;
 }

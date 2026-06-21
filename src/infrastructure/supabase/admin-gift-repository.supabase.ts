@@ -5,7 +5,7 @@ import { GiftCategory } from '@/domain/enums/gift-category';
 import { GiftStatus } from '@/domain/enums/gift-status';
 import type { AdminGiftRepository } from '@/domain/repositories/admin-gift-repository';
 
-import { imageExtension, uploadImageToMedia } from './upload-image';
+import { imageExtension, uploadImageToMedia, uploadRemoteImageToMedia } from './upload-image';
 
 interface GiftItemRow {
   id: string;
@@ -45,14 +45,13 @@ export class SupabaseAdminGiftRepository implements AdminGiftRepository {
     sizeLabel?: string;
     quantityNeeded: number;
     purchaseUrl?: string;
-    image: File;
+    image?: File;
+    imageUrl?: string;
   }): Promise<GiftItem> {
     const id = crypto.randomUUID();
-    const imageUrl = await uploadImageToMedia(
-      this.client,
-      `gifts/${id}.${imageExtension(input.image)}`,
-      input.image,
-    );
+    const imageUrl = input.image
+      ? await uploadImageToMedia(this.client, `gifts/${id}.${imageExtension(input.image)}`, input.image)
+      : await uploadRemoteImageToMedia(this.client, `gifts/${id}`, input.imageUrl!);
 
     const { data, error } = await this.client
       .from('gift_items')

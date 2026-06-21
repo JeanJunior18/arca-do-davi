@@ -4,6 +4,7 @@ import { createGiftItem } from '@/application/use-cases/create-gift-item.use-cas
 import type { GiftCategory } from '@/domain/enums/gift-category';
 import { SupabaseAdminGiftRepository } from '@/infrastructure/supabase/admin-gift-repository.supabase';
 import { createSecretServerClient } from '@/infrastructure/supabase/secret-server-client';
+import { fetchOpenGraphMetadata } from '@/infrastructure/http/open-graph-metadata';
 
 export interface AdminGiftActionResult {
   success: boolean;
@@ -17,6 +18,9 @@ export async function createGiftItemAction(
   try {
     const repository = new SupabaseAdminGiftRepository(createSecretServerClient());
 
+    const imageField = formData.get('image');
+    const image = imageField instanceof File && imageField.size > 0 ? imageField : undefined;
+
     await createGiftItem(repository, {
       name: String(formData.get('name') ?? ''),
       description: formData.get('description')?.toString() || undefined,
@@ -24,11 +28,32 @@ export async function createGiftItemAction(
       sizeLabel: formData.get('sizeLabel')?.toString() || undefined,
       quantityNeeded: Number(formData.get('quantityNeeded') ?? 1),
       purchaseUrl: formData.get('purchaseUrl')?.toString() || undefined,
-      image: formData.get('image') as File,
+      image,
+      imageUrl: formData.get('imageUrl')?.toString() || undefined,
     });
 
     return { success: true };
   } catch (error) {
     return { success: false, message: error instanceof Error ? error.message : 'Erro inesperado.' };
+  }
+}
+
+export interface GiftLinkMetadataResult {
+  success: boolean;
+  name?: string;
+  description?: string;
+  imageUrl?: string;
+  message?: string;
+}
+
+export async function fetchGiftLinkMetadataAction(url: string): Promise<GiftLinkMetadataResult> {
+  try {
+    const metadata = await fetchOpenGraphMetadata(url);
+    return { success: true, ...metadata };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Não foi possível buscar os dados desse link.',
+    };
   }
 }

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Badge } from '@/components/ui/Badge';
 import { HeartDivider } from '@/components/ui/SectionContainer';
 import { eventConfig } from '@/config/event.config';
@@ -42,10 +43,16 @@ export function HeroSection() {
           </p>
         </div>
 
-        <div
-          aria-hidden
-          className="mt-10 h-48 w-full max-w-sm rounded-[2.5rem] border border-primary-200/60 bg-[linear-gradient(135deg,var(--color-whimsy-pink),var(--color-whimsy-yellow)_35%,var(--color-whimsy-sky)_70%,var(--color-whimsy-mint))] opacity-70 shadow-card lg:mt-0 lg:h-80 lg:flex-1"
-        />
+        <div className="relative mt-10 h-48 w-full max-w-sm overflow-hidden rounded-[2.5rem] border border-primary-200/60 shadow-card lg:mt-0 lg:h-80 lg:flex-1">
+          <Image
+            src="/hero-davi.jpg"
+            alt={`Foto de ${eventConfig.childName}`}
+            fill
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-cover object-top"
+            priority
+          />
+        </div>
       </div>
     </section>
   );

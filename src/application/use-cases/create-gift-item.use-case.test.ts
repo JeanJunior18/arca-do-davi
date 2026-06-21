@@ -71,4 +71,29 @@ describe('createGiftItem', () => {
       }),
     ).rejects.toThrow();
   });
+
+  it('aceita imageUrl no lugar do upload manual', async () => {
+    const repository = new FakeAdminGiftRepository();
+
+    await createGiftItem(repository, {
+      name: 'Berço portátil',
+      category: GiftCategory.REGISTRY_ITEM,
+      quantityNeeded: 1,
+      imageUrl: 'https://example.com/produto.jpg',
+    } as Parameters<typeof createGiftItem>[1]);
+
+    expect(repository.created[0].imageUrl).toBe('https://example.com/produto.jpg');
+  });
+
+  it('rejeita quando nem image nem imageUrl são informados', async () => {
+    const repository = new FakeAdminGiftRepository();
+
+    await expect(
+      createGiftItem(repository, {
+        name: 'Berço portátil',
+        category: GiftCategory.REGISTRY_ITEM,
+        quantityNeeded: 1,
+      } as Parameters<typeof createGiftItem>[1]),
+    ).rejects.toThrow();
+  });
 });
