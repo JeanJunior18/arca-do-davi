@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { BoatIcon } from '@/components/ui/BoatIcon';
+
 const navLinks = [
   { href: '#inicio', label: 'Início' },
   { href: '#presenca', label: 'Presença' },
@@ -18,7 +20,7 @@ export function NavBar() {
     <header className="sticky top-0 z-50 w-full border-b border-primary-100/60 bg-background/90 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
         <a href="#inicio" className="flex items-center gap-2 font-display text-sm uppercase tracking-[0.15em] text-primary-700">
-          <span aria-hidden>⚓</span>
+          <BoatIcon className="h-5 w-5" />
           Arca do Davi
         </a>
 

@@ -608,22 +608,7 @@ dentro de info-cards-section.
 
 ---
 
-## Etapa 11 — Rota interna de guest log
-
-```
-Crie src/app/internal/guest-log/page.tsx como Server Component. Dentro dele
-(e só dentro dele): instancie o service-role-client, instancie
-SupabaseRsvpRepository com esse client, chame o use case list-rsvps.
-Renderize uma tabela simples (nome, acompanhantes, whatsapp, data) e o total
-agregado no topo. Sem qualquer link pra essa rota em nenhum menu, componente
-de navegação ou sitemap. Sem autenticação — a única proteção é a URL não ser
-divulgada e não existir policy de select pra anon na tabela rsvps (já
-garantido na Etapa 3).
-```
-
----
-
-## Etapa 12 — Seed, variáveis de ambiente e deploy
+## Etapa 11 — Seed, variáveis de ambiente e deploy
 
 ```
 1. Crie .env.local.example listando (sem valores reais):
@@ -649,9 +634,8 @@ garantido na Etapa 3).
 ## Checklist final de QA (rodar manualmente após o deploy)
 
 - UC-01: confirmar presença com e sem acompanhantes — aparece em `rsvps`.
-- UC-02: abrir `/internal/guest-log` direto pela URL — mostra a lista; confirmar que a URL não aparece em nenhum link do site.
-- UC-03/04: reservar um `REGISTRY_ITEM` — status muda pra `CLAIMED`; tentar reservar de novo no mesmo item (duas abas) — a segunda tentativa recebe `ALREADY_CLAIMED`.
-- UC-05: reservar `DIAPER_PACK` parcial, depois reservar excedente — status só vira `FULFILLED` quando a soma bate, overshoot não dá erro.
-- UC-06/07: deixar mensagem — aparece imediatamente no mural.
-- UC-08: galeria mostra as 5 fases na ordem certa.
+- UC-02/03: reservar um `REGISTRY_ITEM` — status muda pra `CLAIMED`; tentar reservar de novo no mesmo item (duas abas) — a segunda tentativa recebe `ALREADY_CLAIMED`.
+- UC-04: reservar `DIAPER_PACK` parcial, depois reservar excedente — status só vira `FULFILLED` quando a soma bate, overshoot não dá erro.
+- UC-05/06: deixar mensagem — aparece imediatamente no mural.
+- UC-07: galeria mostra as 5 fases na ordem certa.
 - Abrir o DevTools em qualquer página pública, checar a aba Network/Sources: nenhuma string de `SUPABASE_SERVICE_ROLE_KEY` ou `SUPABASE_ANON_KEY` deve aparecer no bundle JS enviado ao browser.
