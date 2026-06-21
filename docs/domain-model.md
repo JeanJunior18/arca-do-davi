@@ -35,7 +35,8 @@ passa pela RPC `upsert_rsvp` (ver regra de negócio #6); leitura só via
 | purchase_url | text | nullable, link de afiliado opcional — qualquer categoria, independente do fluxo de claim |
 
 RLS: select liberado pra `anon`. Sem insert/update público — gerenciado via
-dashboard ou seed.
+dashboard, seed (`scripts/sync-mercadolivre-gifts.mjs`) ou pela rota privada
+`src/app/internal/gifts/` (Basic Auth + `SUPABASE_SECRET_KEY`).
 
 ### gift_claims
 
@@ -73,7 +74,8 @@ RLS: insert liberado pra `anon`. Select liberado pra `anon` filtrado por
 | image_url | text | not null |
 | display_order | int | not null |
 
-RLS: select liberado pra `anon` apenas.
+RLS: select liberado pra `anon` apenas. Insert só pela rota privada
+`src/app/internal/photos/` (Basic Auth + `SUPABASE_SECRET_KEY`).
 
 ## Regras de negócio
 
@@ -103,9 +105,9 @@ RLS: select liberado pra `anon` apenas.
 
 5. **`rsvps` não tem leitura pública, por design.** A única forma de listar
    confirmações é a rota interna em `app/internal/guest-log/`, que usa o
-   client de service role. É obscuridade de URL + RLS, não um sistema de
-   autenticação completo — aceitável porque o projeto é de curta duração e
-   tem um único operador.
+   client de service role. Todo o prefixo `/internal/*` (guest-log,
+   `gifts/`, `photos/`) é protegido por Basic Auth via `src/proxy.ts`
+   — não é mais só obscuridade de URL.
 
 6. **RSVP é upsert por `whatsapp_number`, nunca insert cego.** Sempre via RPC
    `upsert_rsvp(p_guest_name, p_companion_count, p_whatsapp_number, p_confirm_update)`
