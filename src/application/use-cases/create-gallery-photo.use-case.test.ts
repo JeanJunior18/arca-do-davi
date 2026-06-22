@@ -20,6 +20,10 @@ class FakeAdminGalleryRepository implements AdminGalleryRepository {
       displayOrder: input.displayOrder,
     };
   }
+
+  async getNextDisplayOrder(): Promise<number> {
+    return this.created.length;
+  }
 }
 
 function fakeImage(): File {

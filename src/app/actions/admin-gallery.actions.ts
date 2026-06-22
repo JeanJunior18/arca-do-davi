@@ -1,6 +1,7 @@
 'use server';
 
 import { createGalleryPhoto } from '@/application/use-cases/create-gallery-photo.use-case';
+import { getNextGalleryDisplayOrder } from '@/application/use-cases/get-next-gallery-display-order.use-case';
 import type { BabyAgeStage } from '@/domain/enums/baby-age-stage';
 import { SupabaseAdminGalleryRepository } from '@/infrastructure/supabase/admin-gallery-repository.supabase';
 import { createSecretServerClient } from '@/infrastructure/supabase/secret-server-client';
@@ -8,6 +9,11 @@ import { createSecretServerClient } from '@/infrastructure/supabase/secret-serve
 export interface AdminGalleryActionResult {
   success: boolean;
   message?: string;
+}
+
+export async function getNextGalleryDisplayOrderAction(): Promise<number> {
+  const repository = new SupabaseAdminGalleryRepository(createSecretServerClient());
+  return getNextGalleryDisplayOrder(repository);
 }
 
 export async function createGalleryPhotoAction(

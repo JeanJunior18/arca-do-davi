@@ -7,4 +7,5 @@ export interface AdminGalleryRepository {
     displayOrder: number;
     image: File;
   }): Promise<GalleryPhoto>;
+  getNextDisplayOrder(): Promise<number>;
 }

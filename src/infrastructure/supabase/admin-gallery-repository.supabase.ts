@@ -51,4 +51,16 @@ export class SupabaseAdminGalleryRepository implements AdminGalleryRepository {
     if (error) throw error;
     return toGalleryPhoto(data as GalleryPhotoRow);
   }
+
+  async getNextDisplayOrder(): Promise<number> {
+    const { data, error } = await this.client
+      .from('gallery_photos')
+      .select('display_order')
+      .order('display_order', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+    return data ? data.display_order + 1 : 0;
+  }
 }
