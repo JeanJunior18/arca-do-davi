@@ -1,5 +1,7 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
+
 import { createGalleryPhoto } from '@/application/use-cases/create-gallery-photo.use-case';
 import { getNextGalleryDisplayOrder } from '@/application/use-cases/get-next-gallery-display-order.use-case';
 import type { BabyAgeStage } from '@/domain/enums/baby-age-stage';
@@ -29,6 +31,7 @@ export async function createGalleryPhotoAction(
       image: formData.get('image') as File,
     });
 
+    revalidatePath('/');
     return { success: true };
   } catch (error) {
     return { success: false, message: error instanceof Error ? error.message : 'Erro inesperado.' };
