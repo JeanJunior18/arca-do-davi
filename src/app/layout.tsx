@@ -22,9 +22,29 @@ const nunito = Nunito({
   weight: ['400', '500', '600', '700', '800'],
 });
 
+const siteUrl = 'https://arca-do-davi.asherlabs.com.br';
+const title = 'Arca do Davi — 1 aninho';
+const description = 'Convite e confirmação de presença pro aniversário de 1 ano do Davi.';
+
 export const metadata: Metadata = {
-  title: 'Arca do Davi — 1 aninho',
-  description: 'Convite e confirmação de presença pro aniversário de 1 ano do Davi.',
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    url: siteUrl,
+    siteName: 'Arca do Davi',
+    locale: 'pt_BR',
+    type: 'website',
+    images: [{ url: '/hero-davi.jpg', width: 3024, height: 2833, alt: 'Davi' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title,
+    description,
+    images: ['/hero-davi.jpg'],
+  },
 };
 
 export default function RootLayout({
