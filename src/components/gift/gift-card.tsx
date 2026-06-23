@@ -33,9 +33,9 @@ const claimStrategyByCategory: Record<GiftCategory, GiftClaimStrategy> = {
     claim: claimRegistryItemAction,
   },
   [GiftCategory.DIAPER_PACK]: {
-    ctaLabel: 'Reservar fraldas',
+    ctaLabel: 'Reservar',
     claimedLabel: 'Obrigado pela reserva!',
-    categoryLabel: 'Fraldas',
+    categoryLabel: 'Presente',
     claim: claimDiaperPackAction,
     renderExtraFields: () => (
       <Input
