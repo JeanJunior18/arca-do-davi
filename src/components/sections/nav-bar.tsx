@@ -6,7 +6,6 @@ import { BoatIcon } from '@/components/ui/BoatIcon';
 
 const navLinks = [
   { href: '#inicio', label: 'Início' },
-  { href: '#presenca', label: 'Presença' },
   { href: '#presentes', label: 'Presentes' },
   { href: '#como-chegar', label: 'Como chegar' },
   { href: '#galeria', label: 'Galeria' },

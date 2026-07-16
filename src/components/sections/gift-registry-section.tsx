@@ -1,27 +1,23 @@
 import Image from 'next/image';
 
-import { listGiftItems } from '@/application/use-cases/list-gift-items.use-case';
 import { CopyPixKey } from '@/components/gift/copy-pix-key';
 import { GiftGallery } from '@/components/gift/gift-gallery';
 import { Card } from '@/components/ui/Card';
 import { SectionContainer } from '@/components/ui/SectionContainer';
 import { eventConfig } from '@/config/event.config';
-import { createPublishableServerClient } from '@/infrastructure/supabase/publishable-server-client';
-import { SupabaseGiftRepository } from '@/infrastructure/supabase/gift-repository.supabase';
+import { giftItems } from '@/data/keepsake-data';
 
-export async function GiftRegistrySection() {
-  const repository = new SupabaseGiftRepository(createPublishableServerClient());
-  const { registryItems, diaperPacks } = await listGiftItems(repository);
-  const allItems = [...registryItems, ...diaperPacks];
+export function GiftRegistrySection() {
+  const allItems = giftItems;
 
   return (
     <SectionContainer
       id="presentes"
       title="Lista de presentes"
-      subtitle="O melhor presente é ter você conosco! Mas, se quiser nos presentear, escolha como preferir:"
+      subtitle="O carinho de quem lembrou do Davi nesse dia."
     >
       <p className="mb-8 max-w-xl text-center font-body text-sm italic text-ink-soft">
-        Preparamos uma lista com algumas sugestões de presentes para o Davi. Ela serve apenas como inspiração: você pode comprar pelos links, escolher em outro lugar ou presentear da forma que preferir. Damos preferência a brinquedos educativos e pedagógicos, que ajudam no desenvolvimento e nas descobertas dessa fase.
+        Registro de como ficou a lista de presentes do Davi depois da festa.
       </p>
 
       <div className="flex w-full flex-col gap-8">

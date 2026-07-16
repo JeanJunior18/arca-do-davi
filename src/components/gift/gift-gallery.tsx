@@ -4,11 +4,11 @@ import { useMemo, useState } from 'react';
 
 import { GiftCard } from '@/components/gift/gift-card';
 import { Button } from '@/components/ui/Button';
-import type { GiftItem } from '@/domain/entities/gift-item';
+import type { GiftItem } from '@/data/keepsake-data';
 import { GiftStatus } from '@/domain/enums/gift-status';
 
 export interface GiftGalleryProps {
-  items: GiftItem[];
+  items: readonly GiftItem[];
 }
 
 const PAGE_SIZE = 6;
@@ -22,7 +22,7 @@ const sortLabel: Record<SortOption, string> = {
   CATEGORY: 'Categoria',
 };
 
-function sortItems(items: GiftItem[], sortBy: SortOption): GiftItem[] {
+function sortItems(items: readonly GiftItem[], sortBy: SortOption): GiftItem[] {
   const sorted = [...items];
 
   switch (sortBy) {

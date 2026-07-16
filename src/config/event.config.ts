@@ -5,7 +5,7 @@ export const eventConfig = {
   eventTime: '16:30',
   venueName: 'Sítio Portugal Eventos',
   venueAddress: 'Av. 1º de Maio, 341 — São Francisco, Codó - MA, 65400-000',
-  googleMapsUrl: 'https://share.google/s5jo6eSNwlZ0iKPZM',
+  googleMapsUrl: 'https://maps.app.goo.gl/RhyRGxggxa4ezvgFA',
   bibleVerse: {
     text: 'Dois a dois eles entraram na arca, como Deus havia ordenado a Noé.',
     reference: 'Gênesis 7:9',

@@ -1,12 +1,9 @@
-import { listGalleryPhotos } from '@/application/use-cases/list-gallery-photos.use-case';
 import { GalleryCarousel } from '@/components/sections/gallery-carousel';
 import { SectionContainer } from '@/components/ui/SectionContainer';
-import { createPublishableServerClient } from '@/infrastructure/supabase/publishable-server-client';
-import { SupabaseGalleryRepository } from '@/infrastructure/supabase/gallery-repository.supabase';
+import { galleryPhotos } from '@/data/keepsake-data';
 
-export async function GallerySection() {
-  const repository = new SupabaseGalleryRepository(createPublishableServerClient());
-  const photos = await listGalleryPhotos(repository);
+export function GallerySection() {
+  const photos = [...galleryPhotos].sort((a, b) => a.displayOrder - b.displayOrder);
 
   if (photos.length === 0) {
     return null;

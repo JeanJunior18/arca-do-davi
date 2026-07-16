@@ -1,15 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import type { ReactNode } from 'react';
-import { useOptimistic, useState, useTransition } from 'react';
+import { useState } from 'react';
 
-import { claimDiaperPackAction, claimRegistryItemAction } from '@/app/actions/gift.actions';
 import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import type { GiftItem } from '@/domain/entities/gift-item';
+import type { GiftItem } from '@/data/keepsake-data';
 import { GiftCategory } from '@/domain/enums/gift-category';
 import { GiftStatus } from '@/domain/enums/gift-status';
 
@@ -17,37 +13,15 @@ export interface GiftCardProps {
   item: GiftItem;
 }
 
-interface GiftClaimStrategy {
-  ctaLabel: string;
-  claimedLabel: string;
-  categoryLabel: string;
-  claim: (formData: FormData) => Promise<{ success: boolean; message?: string }>;
-  renderExtraFields?: () => ReactNode;
-}
+const categoryLabel: Record<GiftCategory, string> = {
+  [GiftCategory.REGISTRY_ITEM]: 'Lista de presentes',
+  [GiftCategory.DIAPER_PACK]: 'Presente',
+};
 
-const claimStrategyByCategory: Record<GiftCategory, GiftClaimStrategy> = {
-  [GiftCategory.REGISTRY_ITEM]: {
-    ctaLabel: 'Quero dar esse presente',
-    claimedLabel: 'Já reservado, obrigado!',
-    categoryLabel: 'Lista de presentes',
-    claim: claimRegistryItemAction,
-  },
-  [GiftCategory.DIAPER_PACK]: {
-    ctaLabel: 'Reservar',
-    claimedLabel: 'Obrigado pela reserva!',
-    categoryLabel: 'Presente',
-    claim: claimDiaperPackAction,
-    renderExtraFields: () => (
-      <Input
-        label="Quantidade"
-        name="quantity"
-        type="number"
-        defaultValue={1}
-        min={1}
-        inputMode="numeric"
-      />
-    ),
-  },
+const statusLabel: Record<GiftStatus, string> = {
+  [GiftStatus.AVAILABLE]: 'Não reservado',
+  [GiftStatus.CLAIMED]: 'Presenteado, obrigado!',
+  [GiftStatus.FULFILLED]: 'Completo, obrigado!',
 };
 
 function GiftThumbnail({ item, onOpen }: { item: GiftItem; onOpen: () => void }) {
@@ -78,37 +52,13 @@ function GiftThumbnail({ item, onOpen }: { item: GiftItem; onOpen: () => void })
 }
 
 export function GiftCard({ item }: GiftCardProps) {
-  const strategy = claimStrategyByCategory[item.category];
-  const [confirmedItem, setConfirmedItem] = useState(item);
-  const [optimisticItem, setOptimisticItem] = useOptimistic(confirmedItem);
-  const [feedback, setFeedback] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-
-  const isClaimed = optimisticItem.status !== GiftStatus.AVAILABLE;
-
-  function handleSubmit(formData: FormData) {
-    formData.set('giftItemId', item.id);
-    setFeedback(null);
-
-    startTransition(async () => {
-      setOptimisticItem({ ...item, status: GiftStatus.CLAIMED });
-
-      const result = await strategy.claim(formData);
-
-      if (result.success) {
-        setConfirmedItem({ ...item, status: GiftStatus.CLAIMED });
-      } else {
-        setFeedback(result.message ?? 'Não foi possível reservar esse item.');
-      }
-    });
-  }
 
   return (
     <Card className="flex flex-col gap-3">
       <div className="relative -m-6 mb-0 aspect-square overflow-hidden rounded-t-2xl">
         <GiftThumbnail item={item} onOpen={() => setIsLightboxOpen(true)} />
-        <Badge className="absolute top-3 left-3 shadow-card">{strategy.categoryLabel}</Badge>
+        <Badge className="absolute top-3 left-3 shadow-card">{categoryLabel[item.category]}</Badge>
       </div>
 
       <div className="flex items-start justify-between gap-3 pt-1">
@@ -124,42 +74,7 @@ export function GiftCard({ item }: GiftCardProps) {
 
       {item.description && <p className="font-body text-sm text-ink-soft">{item.description}</p>}
 
-      {isClaimed ? (
-        <div className="flex flex-col gap-3">
-          <p className="font-body text-sm font-semibold text-primary-700">{strategy.claimedLabel}</p>
-          {item.purchaseUrl && (
-            <a
-              href={item.purchaseUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-primary-300 bg-surface px-6 py-3 font-body text-sm font-semibold uppercase tracking-wide text-primary-700 transition-colors hover:bg-primary-50"
-            >
-              Comprar
-            </a>
-          )}
-        </div>
-      ) : (
-        <form action={handleSubmit} className="flex flex-col gap-3">
-          <Input label="Seu nome" name="guestName" placeholder="Digite seu nome" required minLength={2} />
-          {strategy.renderExtraFields?.()}
-          <div className="flex gap-3">
-            <Button type="submit" disabled={isPending} className="flex-1">
-              {isPending ? 'Reservando…' : strategy.ctaLabel}
-            </Button>
-            {item.purchaseUrl && (
-              <a
-                href={item.purchaseUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-primary-300 bg-surface px-6 py-3 font-body text-sm font-semibold uppercase tracking-wide text-primary-700 transition-colors hover:bg-primary-50"
-              >
-                Comprar
-              </a>
-            )}
-          </div>
-          {feedback && <p className="font-body text-sm text-secondary-700">{feedback}</p>}
-        </form>
-      )}
+      <p className="font-body text-sm font-semibold text-primary-700">{statusLabel[item.status]}</p>
 
       {isLightboxOpen && item.imageUrl && (
         <div
